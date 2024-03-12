@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.roydon.business.app.mapper.LessonIconMapper">
+
+    <resultMap type="LessonIcon" id="LessonIconResult">
+        <result property="iconId" column="icon_id"/>
+        <result property="remoteUrl" column="remote_url"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+
+    <sql id="selectLessonIconVo">
+        select icon_id, remote_url, create_time, update_time
+        from lesson_icon
+    </sql>
+
+    <select id="selectLessonIconList" parameterType="LessonIcon" resultMap="LessonIconResult">
+        <include refid="selectLessonIconVo"/>
+        order by create_time desc
+    </select>
+
+    <select id="selectLessonIconByIconId" parameterType="Long" resultMap="LessonIconResult">
+        <include refid="selectLessonIconVo"/>
+        where icon_id = #{iconId}
+    </select>
+
+    <insert id="insertLessonIcon" parameterType="LessonIcon" useGeneratedKeys="true" keyProperty="iconId">
+        insert into lesson_icon
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="remoteUrl != null">remote_url,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateTime != null">update_time,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="remoteUrl != null">#{remoteUrl},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+        </trim>
+    </insert>
+
+    <update id="updateLessonIcon" parameterType="LessonIcon">
+        update lesson_icon
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="remoteUrl != null">remote_url = #{remoteUrl},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where icon_id = #{iconId}
+    </update>
+
+    <delete id="deleteLessonIconByIconId" parameterType="Long">
+        delete
+        from lesson_icon
+        where icon_id = #{iconId}
+    </delete>
+
+    <delete id="deleteLessonIconByIconIds" parameterType="String">
+        delete from lesson_icon where icon_id in
+        <foreach item="iconId" collection="array" open="(" separator="," close=")">
+            #{iconId}
+        </foreach>
+    </delete>
+</mapper>

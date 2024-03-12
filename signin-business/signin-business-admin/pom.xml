@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.roydon</groupId>
+        <artifactId>signin-business</artifactId>
+        <version>1.0.0</version>
+    </parent>
+
+    <artifactId>signin-business-admin</artifactId>
+
+    <dependencies>
+
+        <!-- 对象存储oss -->
+        <dependency>
+            <groupId>com.roydon</groupId>
+            <artifactId>signin-business-oss</artifactId>
+            <version>${signin.version}</version>
+        </dependency>
+
+        <!-- sms -->
+        <dependency>
+            <groupId>com.roydon</groupId>
+            <artifactId>signin-business-sms</artifactId>
+            <version>${signin.version}</version>
+        </dependency>
+
+        <!-- swagger3-->
+        <dependency>
+            <groupId>io.springfox</groupId>
+            <artifactId>springfox-boot-starter</artifactId>
+        </dependency>
+
+        <!-- 防止进入swagger页面报类型转换错误，排除3.0.0中的引用，手动增加1.6.2版本 -->
+        <dependency>
+            <groupId>io.swagger</groupId>
+            <artifactId>swagger-models</artifactId>
+            <version>1.6.2</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.roydon</groupId>
+            <artifactId>signin-component-qrcode</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+
+    </dependencies>
+
+</project>
