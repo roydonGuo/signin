@@ -85,6 +85,12 @@ public class OssServiceImpl implements OssService {
     }
 
     @Override
+    public String uploadUserFace(Long userId, String userName, MultipartFile file) {
+        String uploadFile = this.uploadFile(file, OssUtil.USER_FACE_FILE);
+        return uploadFile;
+    }
+
+    @Override
     public String uploadNoticeFile(MultipartFile file) {
         return this.uploadFile(file, OssUtil.NOTICE_FILE);
     }

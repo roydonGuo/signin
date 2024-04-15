@@ -8,6 +8,7 @@ import com.roydon.common.core.domain.AjaxResult;
 import com.roydon.common.core.domain.entity.SysUser;
 import com.roydon.common.core.domain.model.LoginUser;
 import com.roydon.common.enums.BusinessType;
+import com.roydon.common.utils.BaiduFaceUtil;
 import com.roydon.common.utils.SecurityUtils;
 import com.roydon.common.utils.StringUtils;
 import com.roydon.framework.web.service.TokenService;
@@ -119,7 +120,7 @@ public class SysProfileController extends BaseController {
         if (!file.isEmpty()) {
             LoginUser loginUser = getLoginUser();
             // 用户上传头像，上传oss之前请先删除原来用户头像文件
-            String avatar = ossService.uploadUserAvatar(loginUser.getUserId(),loginUser.getUsername(), file);
+            String avatar = ossService.uploadUserAvatar(loginUser.getUserId(), loginUser.getUsername(), file);
 //            String avatar = FileUploadUtils.upload(CommunityConfig.getAvatarPath(), file, MimeTypeUtils.IMAGE_EXTENSION);
             if (userService.updateUserAvatar(loginUser.getUsername(), avatar)) {
                 AjaxResult ajax = AjaxResult.success();
@@ -131,5 +132,41 @@ public class SysProfileController extends BaseController {
             }
         }
         return AjaxResult.error("上传图片异常，请联系管理员");
+    }
+
+    /**
+     * 头像上传
+     */
+    @ApiOperation("面部上传")
+    @Log(title = "面部上传", businessType = BusinessType.UPDATE)
+    @PostMapping("/face")
+    public AjaxResult face(@RequestParam("file") MultipartFile file) throws Exception {
+        if (!file.isEmpty()) {
+            LoginUser loginUser = getLoginUser();
+            // 用户上传头像，上传oss之前请先删除原来用户头像文件
+            String face = ossService.uploadUserFace(loginUser.getUserId(), loginUser.getUsername(), file);
+            try {
+                BaiduFaceUtil.uploadUserFace(face, loginUser.getUserId().toString());
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+            if (userService.updateUserFace(loginUser.getUserId(), face)) {
+                AjaxResult ajax = AjaxResult.success();
+                ajax.put("faceUrl", face);
+                return ajax;
+            }
+        }
+        return AjaxResult.error("上传图片异常，请联系管理员");
+    }
+
+    /**
+     * 获取面部
+     *
+     * @return
+     * @throws Exception
+     */
+    @GetMapping("/getFace")
+    public AjaxResult getFace() {
+        return AjaxResult.success(userService.getById(getLoginUser().getUserId()).getRealFace());
     }
 }

@@ -13,6 +13,7 @@ public interface OssService {
     String uploadFile(MultipartFile file);
 
     String uploadUserAvatar(Long userId, String userName, MultipartFile file);
+    String uploadUserFace(Long userId, String userName, MultipartFile file);
 
     String uploadNoticeFile(MultipartFile file);
     String uploadIconFile(MultipartFile file);

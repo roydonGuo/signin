@@ -182,6 +182,7 @@ public interface ISysUserService extends IService<SysUser> {
      * @return 结果
      */
     public boolean updateUserAvatar(String userName, String avatar);
+    public boolean updateUserFace(Long userId, String avatar);
 
     /**
      * 重置用户密码

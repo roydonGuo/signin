@@ -78,6 +78,12 @@ public class SysUser extends BaseEntity {
     @ApiModelProperty("真实姓名")
     @Excel(name = "真实姓名")
     private String realName;
+    /**
+     * 真实面部地址
+     */
+    @ApiModelProperty("真实面部地址")
+    @Excel(name = "真实面部地址")
+    private String realFace;
 
     /**
      * 身份证号
@@ -379,6 +385,14 @@ public class SysUser extends BaseEntity {
 
     public void setSchoolNumber(String schoolNumber) {
         this.schoolNumber = schoolNumber;
+    }
+
+    public String getRealFace() {
+        return realFace;
+    }
+
+    public void setRealFace(String realFace) {
+        this.realFace = realFace;
     }
 
     @Override

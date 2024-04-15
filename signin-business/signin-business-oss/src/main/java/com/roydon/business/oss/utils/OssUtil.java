@@ -9,6 +9,7 @@ public class OssUtil {
 
     //用户头像文件夹前缀
     public static final String USER_AVATAR_FILE = "user-avatar/"; // 用户头像文件
+    public static final String USER_FACE_FILE = "user-face/"; // 用户头像文件
     public static final String NOTICE_FILE = "notice-file/"; // app公告文件
     public static final String ICON_FILE = "icon-file/"; // 图标
     public static final String COMMON_FILE = "common-file/";

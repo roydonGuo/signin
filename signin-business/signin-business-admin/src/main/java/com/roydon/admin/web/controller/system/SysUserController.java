@@ -271,4 +271,6 @@ public class SysUserController extends BaseController {
     public AjaxResult getAmount() {
         return AjaxResult.success(userService.getUserAmount());
     }
+
+
 }

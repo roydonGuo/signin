@@ -10,6 +10,7 @@
         <result property="email" column="email"/>
         <result property="phonenumber" column="phonenumber"/>
         <result property="realName" column="real_name"/>
+        <result property="realFace" column="real_face"/>
         <result property="idCard" column="id_card"/>
         <result property="schoolNumber" column="school_number"/>
         <result property="sex" column="sex"/>
@@ -57,6 +58,7 @@
                u.avatar,
                u.phonenumber,
                u.real_name,
+               u.real_face,
                u.id_card,
                u.school_number,
                u.password,
@@ -90,7 +92,7 @@
 
     <select id="selectUserList" parameterType="SysUser" resultMap="SysUserResult">
         select u.user_id, u.dept_id, u.nick_name, u.user_name, u.email, u.avatar,
-        u.phonenumber,u.real_name,u.id_card,u.school_number,
+        u.phonenumber,u.real_name,u.real_face,u.id_card,u.school_number,
         u.sex,u.age,u.status,u.del_flag,
         u.login_ip, u.login_date, u.create_by, u.create_time, u.remark, d.dept_name, d.leader from sys_user u
         left join sys_dept d on u.dept_id = d.dept_id
@@ -129,7 +131,7 @@
 
     <select id="selectAllocatedList" parameterType="SysUser" resultMap="SysUserResult">
         select distinct u.user_id, u.dept_id, u.user_name, u.nick_name, u.email,
-        u.phonenumber,u.real_name,u.id_card,u.school_number,
+        u.phonenumber,u.real_name,u.real_face,u.id_card,u.school_number,
         u.status,
         u.create_time
         from sys_user u
@@ -149,7 +151,7 @@
 
     <select id="selectUnallocatedList" parameterType="SysUser" resultMap="SysUserResult">
         select distinct u.user_id, u.dept_id, u.user_name, u.nick_name, u.email,
-        u.phonenumber,u.real_name,u.id_card,u.school_number,
+        u.phonenumber,u.real_name,u.real_face,u.id_card,u.school_number,
         u.status,
         u.create_time
         from sys_user u
@@ -218,6 +220,7 @@
         <if test="avatar != null and avatar != ''">avatar,</if>
         <if test="phonenumber != null and phonenumber != ''">phonenumber,</if>
         <if test="realName != null and realName != ''">real_name,</if>
+        <if test="realFace != null and realFace != ''">real_face,</if>
         <if test="idCard != null and idCard != ''">id_card,</if>
         <if test="schoolNumber != null and schoolNumber != ''">school_number,</if>
         <if test="sex != null and sex != ''">sex,</if>
@@ -236,6 +239,7 @@
         <if test="avatar != null and avatar != ''">#{avatar},</if>
         <if test="phonenumber != null and phonenumber != ''">#{phonenumber},</if>
         <if test="realName != null and realName != ''">#{real_name},</if>
+        <if test="realFace != null and realFace != ''">#{real_face},</if>
         <if test="idCard != null and idCard != ''">#{idCard},</if>
         <if test="schoolNumber != null and schoolNumber != ''">#{schoolNumber},</if>
         <if test="sex != null and sex != ''">#{sex},</if>
@@ -257,6 +261,7 @@
             <if test="email != null ">email = #{email},</if>
             <if test="phonenumber != null ">phonenumber = #{phonenumber},</if>
             <if test="realName != null ">real_name = #{realName},</if>
+            <if test="realFace != null ">real_face = #{realFace},</if>
             <if test="idCard != null ">id_card = #{idCard},</if>
             <if test="schoolNumber != null ">school_number = #{schoolNumber},</if>
             <if test="sex != null and sex != ''">sex = #{sex},</if>

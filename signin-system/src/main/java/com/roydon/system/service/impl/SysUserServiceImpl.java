@@ -1,6 +1,7 @@
 package com.roydon.system.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.ctc.wstx.util.DataUtil;
 import com.roydon.common.annotation.DataScope;
@@ -355,6 +356,13 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     @Override
     public boolean updateUserAvatar(String userName, String avatar) {
         return userMapper.updateUserAvatar(userName, avatar) > 0;
+    }
+
+    @Override
+    public boolean updateUserFace(Long userId, String face) {
+        LambdaUpdateWrapper<SysUser> updateWrapper = new LambdaUpdateWrapper<>();
+        updateWrapper.eq(SysUser::getUserId,userId).set(SysUser::getRealFace,face);
+        return this.update(updateWrapper);
     }
 
     /**
