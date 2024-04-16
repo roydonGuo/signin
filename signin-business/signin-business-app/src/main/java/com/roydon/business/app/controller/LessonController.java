@@ -4,12 +4,19 @@ import com.roydon.business.app.domain.dto.PageDTO;
 import com.roydon.business.app.domain.entity.Lesson;
 import com.roydon.business.app.domain.vo.PageDataInfo;
 import com.roydon.business.app.service.ILessonService;
+import com.roydon.common.core.controller.BaseController;
 import com.roydon.common.core.domain.AjaxResult;
+import com.roydon.common.core.page.TableDataInfo;
+import com.roydon.common.enums.BusinessType;
+import com.roydon.common.utils.poi.ExcelUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletResponse;
+import java.util.List;
 
 /**
  * (Lesson)表控制层
@@ -20,7 +27,7 @@ import javax.annotation.Resource;
 @Slf4j
 @RestController
 @RequestMapping("/app/lesson")
-public class LessonController {
+public class LessonController extends BaseController {
 
     @Resource
     private ILessonService lessonService;
@@ -67,6 +74,18 @@ public class LessonController {
     public AjaxResult removeById(@PathVariable("lessonId") Long lessonId) {
         return AjaxResult.success(this.lessonService.removeById(lessonId));
     }
+
+    /**
+     * 查询列表
+     */
+    @PreAuthorize("@ss.hasPermi('app:lesson:list')")
+    @GetMapping("/list")
+    public TableDataInfo list(Lesson lesson) {
+        startPage();
+        List<Lesson> list = lessonService.selectLessonList(lesson);
+        return getDataTable(list);
+    }
+
 
 }
 

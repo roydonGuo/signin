@@ -16,10 +16,10 @@ spring:
   datasource:
     druid:
       master:
-        host: localhost:3306
-        database: signin
-        username: root
-        password: qwer1234
+        host: 106.14.105.101:3306
+        database: signin2
+        username: roydon
+        password: roydon#Mysql
   redis:
     host: 8.132.211.245
     port: 6379

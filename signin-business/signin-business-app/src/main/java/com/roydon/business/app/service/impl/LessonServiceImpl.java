@@ -12,6 +12,7 @@ import com.roydon.business.app.service.ILessonClassService;
 import com.roydon.business.app.service.ILessonService;
 import com.roydon.common.utils.DateUtils;
 import com.roydon.common.utils.SecurityUtils;
+import com.roydon.common.utils.StringUtil;
 import com.roydon.common.utils.bean.BeanCopyUtils;
 import org.springframework.stereotype.Service;
 
@@ -30,6 +31,9 @@ public class LessonServiceImpl extends ServiceImpl<LessonMapper, Lesson> impleme
 
     @Resource
     private ILessonClassService lessonClassService;
+
+    @Resource
+    private LessonMapper lessonMapper;
 
     /**
      * 保存课程
@@ -80,5 +84,13 @@ public class LessonServiceImpl extends ServiceImpl<LessonMapper, Lesson> impleme
         LessonVO lessonVO = BeanCopyUtils.copyBean(lesson, LessonVO.class);
         lessonVO.setClassCount(lessonClassService.getClassCount(lessonId));
         return lessonVO;
+    }
+
+    @Override
+    public List<Lesson> selectLessonList(Lesson lesson) {
+        LambdaQueryWrapper<Lesson> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(StringUtil.isNotEmpty(lesson.getTeacherId()), Lesson::getTeacherId, lesson.getTeacherId());
+        queryWrapper.like(StringUtil.isNotEmpty(lesson.getLessonName()), Lesson::getLessonName, lesson.getLessonName());
+        return this.list(queryWrapper);
     }
 }

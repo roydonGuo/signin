@@ -6,6 +6,8 @@ import com.roydon.business.app.domain.entity.Lesson;
 import com.roydon.business.app.domain.vo.LessonVO;
 import com.roydon.business.app.domain.vo.PageDataInfo;
 
+import java.util.List;
+
 /**
  * (Lesson)表服务接口
  *
@@ -25,4 +27,6 @@ public interface ILessonService extends IService<Lesson> {
     PageDataInfo myLessonPage(PageDTO pageDTO);
 
     LessonVO getLessonInfoById(Long lessonId);
+
+    List<Lesson> selectLessonList(Lesson lesson);
 }
