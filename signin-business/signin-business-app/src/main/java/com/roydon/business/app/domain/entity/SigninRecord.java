@@ -60,6 +60,9 @@ public class SigninRecord implements Serializable {
     @Excel(name = "签到照片")
     private String pictureUrl;
 
+    @Excel(name = "人脸识别状态")
+    private String faceStatus;
+
     @Excel(name = "签到时间")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createTime;

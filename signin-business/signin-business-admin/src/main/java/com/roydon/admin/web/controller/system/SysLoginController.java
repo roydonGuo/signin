@@ -8,6 +8,7 @@ import com.roydon.common.core.domain.entity.SysMenu;
 import com.roydon.common.core.domain.entity.SysUser;
 import com.roydon.common.core.domain.model.LoginBody;
 import com.roydon.common.core.domain.model.LoginUser;
+import com.roydon.common.core.domain.model.SmsLoginBody;
 import com.roydon.common.enums.LoginQRCodeStatus;
 import com.roydon.common.exception.ServiceException;
 import com.roydon.common.exception.user.UserPasswordNotMatchException;
@@ -91,14 +92,14 @@ public class SysLoginController {
      * @param smsLoginBody 短信登陆体 {String telephone;String phoneCode;}
      * @return 结果
      */
-//    @ApiOperation("短信登陆")
-//    @PostMapping("/sms-login")
-//    public AjaxResult smsLogin(@RequestBody SmsLoginBody smsLoginBody) {
-//        // 生成令牌
-//        log.info("手机验证码登录：{}", smsLoginBody.getTelephone());
-//        String token = loginService.smsLogin(smsLoginBody.getTelephone(), smsLoginBody.getPhoneCode());
-//        return AjaxResult.success().put(Constants.TOKEN, token);
-//    }
+    @ApiOperation("短信登陆")
+    @PostMapping("/sms-login")
+    public AjaxResult smsLogin(@RequestBody SmsLoginBody smsLoginBody) {
+        // 生成令牌
+        log.info("手机验证码登录：{}", smsLoginBody.getTelephone());
+        String token = loginService.smsLogin(smsLoginBody.getTelephone(), smsLoginBody.getPhoneCode());
+        return AjaxResult.success().put(Constants.TOKEN, token);
+    }
 
     /**
      * 获取用户信息

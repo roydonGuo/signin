@@ -68,7 +68,7 @@ public class SigninTaskServiceImpl extends ServiceImpl<SigninTaskMapper, SigninT
         LocalDateTime beginDateTime = LocalDateTime.of(LocalDate.now(), beginLocalTime);
         LocalDateTime endDateTime = LocalDateTime.of(LocalDate.now(), endLocalTime);
 
-        if (beginDateTime.isBefore(LocalDateTime.now()) || endDateTime.isBefore(LocalDateTime.now())) {
+        if (endDateTime.isBefore(LocalDateTime.now())) {
             throw new RuntimeException("签到任务时间必须在当前时间之后");
         }
 

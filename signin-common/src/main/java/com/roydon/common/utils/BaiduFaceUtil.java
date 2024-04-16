@@ -27,7 +27,7 @@ public class BaiduFaceUtil {
      * @return
      * @throws IOException
      */
-    public String compareFace(String face1, String face2) throws IOException {
+    public static boolean compareFace(String face1, String face2) throws IOException {
         String face1Base64 = getFileContentAsBase64(face1);
         String face2Base64 = getFileContentAsBase64(face2);
         MediaType mediaType = MediaType.parse("application/json");
@@ -38,8 +38,16 @@ public class BaiduFaceUtil {
                 .addHeader("Content-Type", "application/json")
                 .build();
         Response response = HTTP_CLIENT.newCall(request).execute();
-        System.out.println(response.body().string());
-        return response.body().string();
+        boolean isScoreAbove90 = isScoreAbove90(response.body().string());
+        System.out.println("Is score above 90? " + isScoreAbove90);
+        return isScoreAbove90;
+    }
+
+    public static boolean isScoreAbove90(String jsonResponse) {
+        JSONObject jsonObject = new JSONObject(jsonResponse);
+        double score = jsonObject.getJSONObject("result").getDouble("score");
+
+        return score > 90;
     }
 
     /**
@@ -53,7 +61,7 @@ public class BaiduFaceUtil {
         String fileContentAsBase64 = getFileContentAsBase64(imageUrl);
 
         MediaType mediaType = MediaType.parse("application/json");
-        RequestBody body = RequestBody.create(mediaType, "{\"group_id\":\"user_grop1\",\"image\":\"" + fileContentAsBase64 + "\",\"image_type\":\"BASE64\",\"user_id\":\"" + userId + "\"}");
+        RequestBody body = RequestBody.create(mediaType, "{\"group_id\":\"user_group1\",\"image\":\"" + fileContentAsBase64 + "\",\"image_type\":\"BASE64\",\"user_id\":\"" + userId + "\"}");
 
         Request request = new Request.Builder()
                 .url("https://aip.baidubce.com/rest/2.0/face/v3/faceset/user/add?access_token=" + getAccessToken())

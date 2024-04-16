@@ -7,9 +7,13 @@ import com.roydon.common.annotation.Log;
 import com.roydon.common.core.domain.AjaxResult;
 import com.roydon.common.core.domain.entity.SysUser;
 import com.roydon.common.enums.BusinessType;
+import com.roydon.common.utils.BaiduFaceUtil;
+import com.roydon.common.utils.SecurityUtils;
+import com.roydon.common.utils.StringUtil;
 import com.roydon.common.utils.encrypt.IdCardNumUtil;
 import com.roydon.common.utils.encrypt.TelephoneUtil;
 import com.roydon.common.utils.poi.ExcelUtil;
+import com.roydon.system.service.ISysUserService;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -38,6 +42,9 @@ public class SigninRecordController {
     @Resource
     private OssService ossService;
 
+    @Resource
+    private ISysUserService userService;
+
     /**
      * 学生端签到
      *
@@ -57,8 +64,20 @@ public class SigninRecordController {
     public AjaxResult uploadPicture(@RequestParam("file") MultipartFile file) throws Exception {
         if (!file.isEmpty()) {
             String imgUrl = ossService.uploadCommonFile(file);
+            // 对比是否与数据库照片一直
+            String realFace = userService.getById(SecurityUtils.getUserId()).getRealFace();
+            if(StringUtil.isEmpty(realFace)){
+                return AjaxResult.error("未设置人脸识别照片");
+            }
+            boolean compareFace = false;
+            try {
+                compareFace = BaiduFaceUtil.compareFace(imgUrl, realFace);
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
             AjaxResult ajax = AjaxResult.success();
             ajax.put("url", imgUrl);
+            ajax.put("faceStatus", compareFace);
             return ajax;
         }
         return AjaxResult.error("上传图片异常，请联系管理员");
