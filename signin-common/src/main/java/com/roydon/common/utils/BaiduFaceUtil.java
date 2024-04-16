@@ -14,8 +14,8 @@ import java.util.Base64;
  **/
 public class BaiduFaceUtil {
 
-    public static final String API_KEY = "9dWb56XwFVmjYuJfEZcwR1az";
-    public static final String SECRET_KEY = "NZcmyrCopfMKf38ZtnWgAgTyiXOLfdz7";
+    public static final String API_KEY = "xGPKL3DnhHwBFdziVCj9FGF8";
+    public static final String SECRET_KEY = "Aa1JWrFvTqrpxfDbIm5OWiWvEP2fxMGq";
 
     static final OkHttpClient HTTP_CLIENT = new OkHttpClient().newBuilder().build();
 
