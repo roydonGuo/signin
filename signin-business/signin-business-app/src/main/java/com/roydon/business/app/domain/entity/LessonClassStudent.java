@@ -33,6 +33,11 @@ public class LessonClassStudent implements Serializable {
      */
     private Long studentId;
 
+    /**
+     * 是否班长0否1班长
+     */
+    private String monitorFlag;
+
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createTime;
 

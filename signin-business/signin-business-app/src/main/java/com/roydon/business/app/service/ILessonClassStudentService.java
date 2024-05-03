@@ -2,6 +2,8 @@ package com.roydon.business.app.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.roydon.business.app.domain.entity.LessonClassStudent;
+import com.roydon.business.app.domain.vo.ClassStudentVO;
+import com.roydon.common.core.domain.entity.SysUser;
 
 import java.util.List;
 
@@ -18,10 +20,15 @@ public interface ILessonClassStudentService extends IService<LessonClassStudent>
 
     /**
      * 获取学生的班级ID列表
+     *
      * @param userId
      * @return
      */
     List<Long> getClassIdsByStudentId(Long userId);
 
     Long getClassStudentCount(Long classId);
+
+    List<ClassStudentVO> studentList(Long classId);
+
+    boolean authMonitor( Long classId,Long userId);
 }

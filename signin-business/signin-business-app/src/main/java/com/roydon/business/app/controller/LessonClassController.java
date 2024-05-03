@@ -34,6 +34,14 @@ public class LessonClassController {
     }
 
     /**
+     * 班长管理的班级
+     */
+    @GetMapping("/monitorClassList")
+    public AjaxResult monitorPage() {
+        return AjaxResult.success(lessonClassService.getMonitorLessonClass());
+    }
+
+    /**
      * 新增数据
      *
      * @param lessonClass 实体
@@ -70,6 +78,7 @@ public class LessonClassController {
     public PageDataInfo searchByCode(@Validated @RequestBody LessonClassSearchByCodePageDTO pageDTO) {
         return lessonClassService.searchByCode(pageDTO);
     }
+
 
 }
 

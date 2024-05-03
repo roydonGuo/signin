@@ -239,4 +239,5 @@ public interface ISysUserService extends IService<SysUser> {
 
     public SysUser getUserByTelephone(String telephone);
 
+    List<SysUser> getUserByIds(List<Long> userIds);
 }

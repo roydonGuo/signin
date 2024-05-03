@@ -4,9 +4,12 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.roydon.business.app.domain.dto.LessonClassPageDTO;
 import com.roydon.business.app.domain.dto.LessonClassSearchByCodePageDTO;
 import com.roydon.business.app.domain.entity.LessonClass;
+import com.roydon.business.app.domain.vo.LessonClassVO;
 import com.roydon.business.app.domain.vo.PageDataInfo;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+
+import java.util.List;
 
 /**
  * (LessonClass)表服务接口
@@ -33,4 +36,6 @@ public interface ILessonClassService extends IService<LessonClass> {
     boolean checkoutClassExist(Long classId);
 
     Long getClassCount(Long lessonId);
+
+    List<LessonClassVO> getMonitorLessonClass();
 }

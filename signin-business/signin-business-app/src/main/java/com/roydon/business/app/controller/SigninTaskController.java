@@ -36,6 +36,17 @@ public class SigninTaskController {
     }
 
     /**
+     * 新增数据
+     *
+     * @param signinTaskCrateDTO 实体
+     * @return 新增结果
+     */
+    @PostMapping("/monitorAdd")
+    public AjaxResult monitorAdd(@Validated @RequestBody SigninTaskCrateDTO signinTaskCrateDTO) {
+        return AjaxResult.success(this.signinTaskService.monitorAddTask(signinTaskCrateDTO));
+    }
+
+    /**
      * 分页签到任务
      *
      * @param signinTaskPageDTO
@@ -44,6 +55,17 @@ public class SigninTaskController {
     @PostMapping("/page")
     public PageDataInfo page(@RequestBody SigninTaskPageDTO signinTaskPageDTO) {
         return signinTaskService.taskPage(signinTaskPageDTO);
+    }
+
+    /**
+     * 分页签到任务
+     *
+     * @param signinTaskPageDTO
+     * @return
+     */
+    @PostMapping("/page2")
+    public PageDataInfo page2(@RequestBody SigninTaskPageDTO signinTaskPageDTO) {
+        return signinTaskService.taskPage2(signinTaskPageDTO);
     }
 
     /**
@@ -62,7 +84,6 @@ public class SigninTaskController {
      * @param taskId
      * @return
      */
-    @PreAuthorize("@ss.hasRole('teacher')")
     @GetMapping("/record/{taskId}")
     public AjaxResult recordList(@PathVariable("taskId") Long taskId) {
         return AjaxResult.success(signinTaskService.getSigninRecordList(taskId));

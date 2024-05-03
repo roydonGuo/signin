@@ -5,6 +5,8 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.roydon.business.app.domain.dto.SigninTaskCrateDTO;
 import com.roydon.business.app.domain.dto.SigninTaskPageDTO;
+import com.roydon.business.app.domain.entity.Lesson;
+import com.roydon.business.app.domain.entity.LessonClass;
 import com.roydon.business.app.domain.entity.SigninRecord;
 import com.roydon.business.app.domain.entity.SigninTask;
 import com.roydon.business.app.domain.enums.DelFlagEnum;
@@ -12,10 +14,7 @@ import com.roydon.business.app.domain.vo.PageDataInfo;
 import com.roydon.business.app.domain.vo.SigninRecordVO;
 import com.roydon.business.app.domain.vo.SigninTaskVO;
 import com.roydon.business.app.mapper.SigninTaskMapper;
-import com.roydon.business.app.service.ILessonClassService;
-import com.roydon.business.app.service.ILessonClassStudentService;
-import com.roydon.business.app.service.ISigninRecordService;
-import com.roydon.business.app.service.ISigninTaskService;
+import com.roydon.business.app.service.*;
 import com.roydon.common.core.domain.entity.SysUser;
 import com.roydon.common.utils.SecurityUtils;
 import com.roydon.common.utils.bean.BeanCopyUtils;
@@ -54,9 +53,11 @@ public class SigninTaskServiceImpl extends ServiceImpl<SigninTaskMapper, SigninT
     @Resource
     private ISysUserService userService;
 
+    @Resource
+    private ILessonService lessonService;
+
     @Override
     public boolean addTask(SigninTaskCrateDTO signinTask) {
-        System.out.println(signinTask.toString());
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
         LocalTime beginLocalTime = LocalTime.parse(signinTask.getBeginTime(), formatter);
         LocalTime endLocalTime = LocalTime.parse(signinTask.getEndTime(), formatter);
@@ -72,10 +73,38 @@ public class SigninTaskServiceImpl extends ServiceImpl<SigninTaskMapper, SigninT
             throw new RuntimeException("签到任务时间必须在当前时间之后");
         }
 
-//        System.out.println("beginDateTime: " + beginDateTime);
-//        System.out.println("endDateTime: " + endDateTime);
         SigninTask signinTask1 = BeanCopyUtils.copyBean(signinTask, SigninTask.class);
         signinTask1.setTeacherId(SecurityUtils.getUserId());
+        signinTask1.setCreateTime(LocalDateTime.now());
+        signinTask1.setBeginTime(beginDateTime);
+        signinTask1.setEndTime(endDateTime);
+        return this.save(signinTask1);
+    }
+
+    @Override
+    public boolean monitorAddTask(SigninTaskCrateDTO signinTask) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
+        LocalTime beginLocalTime = LocalTime.parse(signinTask.getBeginTime(), formatter);
+        LocalTime endLocalTime = LocalTime.parse(signinTask.getEndTime(), formatter);
+        if (endLocalTime.isBefore(beginLocalTime)) {
+            throw new RuntimeException("结束时间不能早于开始时间");
+        }
+        // 转换为 LocalDateTime
+        // 假设当前日期为 2024-02-16
+        LocalDateTime beginDateTime = LocalDateTime.of(LocalDate.now(), beginLocalTime);
+        LocalDateTime endDateTime = LocalDateTime.of(LocalDate.now(), endLocalTime);
+
+        if (endDateTime.isBefore(LocalDateTime.now())) {
+            throw new RuntimeException("签到任务时间必须在当前时间之后");
+        }
+
+        SigninTask signinTask1 = BeanCopyUtils.copyBean(signinTask, SigninTask.class);
+        // 获取classid对应教师id
+        LessonClass lessonClass = lessonClassService.getById(signinTask.getClassId());
+        Long lessonId = lessonClass.getLessonId();
+        Lesson lesson = lessonService.getById(lessonId);
+        Long teacherId = lesson.getTeacherId();
+        signinTask1.setTeacherId(teacherId);
         signinTask1.setCreateTime(LocalDateTime.now());
         signinTask1.setBeginTime(beginDateTime);
         signinTask1.setEndTime(endDateTime);
@@ -86,6 +115,35 @@ public class SigninTaskServiceImpl extends ServiceImpl<SigninTaskMapper, SigninT
     public PageDataInfo taskPage(SigninTaskPageDTO signinTaskPageDTO) {
         LambdaQueryWrapper<SigninTask> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(SigninTask::getTeacherId, SecurityUtils.getUserId()).eq(SigninTask::getClassId, signinTaskPageDTO.getClassId()).eq(SigninTask::getDelFlag, DelFlagEnum.OK.getCode()).orderByDesc(SigninTask::getCreateTime);
+        Page<SigninTask> page = this.page(new Page<>(signinTaskPageDTO.getPageNum(), signinTaskPageDTO.getPageSize()), queryWrapper);
+        List<SigninTask> records = page.getRecords();
+        if (records.isEmpty()) {
+            return PageDataInfo.emptyPage();
+        }
+        List<SigninTaskVO> signinTaskVOS = BeanCopyUtils.copyBeanList(records, SigninTaskVO.class);
+        signinTaskVOS.forEach(vo -> {
+            // 签到数量
+            Long classStudentCount = lessonClassStudentService.getClassStudentCount(vo.getClassId());
+            vo.setRealSigninCount(signinRecordService.getSigninCountByTaskId(vo.getTaskId()));
+            vo.setWaitSigninCount(classStudentCount);
+            // 签到结束
+            vo.setSigninEnd(vo.getEndTime().isBefore(LocalDateTime.now()));
+        });
+        return PageDataInfo.genPageData(signinTaskVOS, page.getTotal());
+    }
+
+    @Override
+    public PageDataInfo taskPage2(SigninTaskPageDTO signinTaskPageDTO) {
+        // 获取classid对应教师id
+        LessonClass lessonClass = lessonClassService.getById(signinTaskPageDTO.getClassId());
+        Long lessonId = lessonClass.getLessonId();
+        Lesson lesson = lessonService.getById(lessonId);
+        Long teacherId = lesson.getTeacherId();
+        LambdaQueryWrapper<SigninTask> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(SigninTask::getTeacherId, teacherId)
+                .eq(SigninTask::getClassId, signinTaskPageDTO.getClassId())
+                .eq(SigninTask::getDelFlag, DelFlagEnum.OK.getCode())
+                .orderByDesc(SigninTask::getCreateTime);
         Page<SigninTask> page = this.page(new Page<>(signinTaskPageDTO.getPageNum(), signinTaskPageDTO.getPageSize()), queryWrapper);
         List<SigninTask> records = page.getRecords();
         if (records.isEmpty()) {

@@ -1,16 +1,22 @@
 package com.roydon.business.app.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.roydon.business.app.domain.entity.LessonClassStudent;
+import com.roydon.business.app.domain.vo.ClassStudentVO;
 import com.roydon.business.app.mapper.LessonClassStudentMapper;
 import com.roydon.business.app.service.ILessonClassService;
 import com.roydon.business.app.service.ILessonClassStudentService;
+import com.roydon.common.core.domain.entity.SysUser;
 import com.roydon.common.utils.SecurityUtils;
+import com.roydon.common.utils.bean.BeanCopyUtils;
+import com.roydon.system.service.ISysUserService;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -27,6 +33,9 @@ public class LessonClassStudentServiceImpl extends ServiceImpl<LessonClassStuden
 
     @Resource
     private ILessonClassService lessonClassService;
+
+    @Resource
+    private ISysUserService userService;
 
     @Override
     public boolean enterClass(Long classId) {
@@ -70,5 +79,31 @@ public class LessonClassStudentServiceImpl extends ServiceImpl<LessonClassStuden
         LambdaQueryWrapper<LessonClassStudent> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(LessonClassStudent::getClassId, classId);
         return this.count(queryWrapper);
+    }
+
+    @Override
+    public List<ClassStudentVO> studentList(Long classId) {
+        // 查询学生id集合
+        LambdaQueryWrapper<LessonClassStudent> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(LessonClassStudent::getClassId, classId);
+        List<LessonClassStudent> list = this.list(queryWrapper);
+        if (list.isEmpty()) {
+            return new ArrayList<>();
+        }
+        List<ClassStudentVO> classStudentVOS = BeanCopyUtils.copyBeanList(list, ClassStudentVO.class);
+        classStudentVOS.forEach(c -> {
+            SysUser user = userService.getById(c.getStudentId());
+            c.setUser(user);
+        });
+        return classStudentVOS;
+    }
+
+    @Override
+    public boolean authMonitor(Long classId, Long userId) {
+        LambdaUpdateWrapper<LessonClassStudent> updateWrapper = new LambdaUpdateWrapper<>();
+        updateWrapper.eq(LessonClassStudent::getStudentId, userId)
+                .eq(LessonClassStudent::getClassId, classId)
+                .set(LessonClassStudent::getMonitorFlag, "1");
+        return this.update(updateWrapper);
     }
 }

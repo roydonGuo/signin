@@ -21,6 +21,7 @@ public interface ISigninTaskService extends IService<SigninTask> {
 
     boolean addTask(SigninTaskCrateDTO signinTask);
 
+    boolean monitorAddTask(SigninTaskCrateDTO signinTask);
     PageDataInfo taskPage(SigninTaskPageDTO signinTaskPageDTO);
 
     /**
@@ -42,5 +43,7 @@ public interface ISigninTaskService extends IService<SigninTask> {
 
     List<SigninRecordVO> getSigninRecordList(Long taskId);
 
+
+    PageDataInfo taskPage2(SigninTaskPageDTO signinTaskPageDTO);
 
 }

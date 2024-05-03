@@ -7,6 +7,7 @@ import com.roydon.business.app.domain.dto.LessonClassPageDTO;
 import com.roydon.business.app.domain.dto.LessonClassSearchByCodePageDTO;
 import com.roydon.business.app.domain.entity.Lesson;
 import com.roydon.business.app.domain.entity.LessonClass;
+import com.roydon.business.app.domain.entity.LessonClassStudent;
 import com.roydon.business.app.domain.enums.DelFlagEnum;
 import com.roydon.business.app.domain.vo.LessonClassSearchVO;
 import com.roydon.business.app.domain.vo.LessonClassVO;
@@ -16,6 +17,7 @@ import com.roydon.business.app.service.ILessonClassService;
 import com.roydon.business.app.service.ILessonClassStudentService;
 import com.roydon.business.app.service.ILessonService;
 import com.roydon.common.core.domain.entity.SysUser;
+import com.roydon.common.utils.SecurityUtils;
 import com.roydon.common.utils.bean.BeanCopyUtils;
 import com.roydon.common.utils.uuid.IdUtils;
 import com.roydon.system.service.ISysUserService;
@@ -25,10 +27,8 @@ import org.springframework.data.domain.PageRequest;
 
 import javax.annotation.Resource;
 import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * (LessonClass)表服务实现类
@@ -128,5 +128,30 @@ public class LessonClassServiceImpl extends ServiceImpl<LessonClassMapper, Lesso
         queryWrapper.eq(LessonClass::getDelFlag, DelFlagEnum.OK.getCode());
         queryWrapper.eq(LessonClass::getLessonId, lessonId);
         return this.count(queryWrapper);
+    }
+
+    @Override
+    public List<LessonClassVO> getMonitorLessonClass() {
+        // 先查询班级id列表
+        LambdaQueryWrapper<LessonClassStudent> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(LessonClassStudent::getStudentId, SecurityUtils.getUserId())
+                .eq(LessonClassStudent::getMonitorFlag, "1");
+        List<LessonClassStudent> list = lessonClassStudentService.list(queryWrapper);
+        if (list.isEmpty()) {
+            return new ArrayList<>();
+        }
+        List<Long> classIds = list.stream().map(LessonClassStudent::getClassId).collect(Collectors.toList());
+        // 再查询班级信息
+
+        LambdaQueryWrapper<LessonClass> queryWrapper2 = new LambdaQueryWrapper<>();
+        queryWrapper2.in(LessonClass::getClassId, classIds);
+        queryWrapper2.eq(LessonClass::getDelFlag, DelFlagEnum.OK.getCode());
+        List<LessonClass> lessonClasses = this.list(queryWrapper2);
+        List<LessonClassVO> lessonClassVOS = BeanCopyUtils.copyBeanList(lessonClasses, LessonClassVO.class);
+        lessonClassVOS.forEach(vo -> {
+            // 查询学生数
+            vo.setStudentCount(lessonClassStudentService.getClassStudentCount(vo.getClassId()));
+        });
+        return lessonClassVOS;
     }
 }

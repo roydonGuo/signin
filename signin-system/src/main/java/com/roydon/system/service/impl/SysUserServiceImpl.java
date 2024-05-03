@@ -544,4 +544,11 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     public SysUser getUserByTelephone(String telephone) {
         return userMapper.selectUserByTelephone(telephone);
     }
+
+    @Override
+    public List<SysUser> getUserByIds(List<Long> userIds) {
+        LambdaQueryWrapper<SysUser> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.in(SysUser::getUserId, userIds);
+        return this.list(queryWrapper);
+    }
 }
